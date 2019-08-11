@@ -2,15 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './Main.css';
 
+import webSocketClient from 'socket.io-client';
+
 import api from '../services/api';
 
 import logo from '../assets/logo.svg';
 import like from '../assets/like.svg';
 import dislike from '../assets/dislike.svg';
+import itsamatch from '../assets/itsamatch.png';
 
 function Main(props) {
 
     const [users, setUsers] = useState([]);
+    const [matchDeveloper, setMatchDevelopers] = useState(null);
 
     useEffect(() => {
         async function loadUsers() {
@@ -24,6 +28,16 @@ function Main(props) {
         }
 
         loadUsers();
+    }, [props.match.params.id]);
+
+    useEffect(() => {
+        const socket = webSocketClient.connect(process.env.REACT_APP_API, {
+            query: { user: props.match.params.id },
+        });
+
+        socket.on('match', developer => {
+            setMatchDevelopers(developer);
+        })
     }, [props.match.params.id]);
 
     async function handleLike(id) {
@@ -70,7 +84,18 @@ function Main(props) {
                 </ul>
             ) : (
                 <div className="empty">No more devs to match =P</div>
-            )} 
+            )}
+
+            { matchDeveloper && (
+                <div className="match-container">
+                    <img src={itsamatch} alt="It's a match"/>
+                    <img className="avatar" src={matchDeveloper.avatar} alt={matchDeveloper.name}/>
+                    <strong>{matchDeveloper.name}</strong>
+                    <p>{matchDeveloper.bio}</p>
+
+                    <button type="button" onClick={() => setMatchDevelopers(null)}>FECHAR</button>
+                </div>
+             ) } 
         </div>
     );
 }
