@@ -14,7 +14,7 @@ import itsamatch from '../assets/itsamatch.png';
 function Main(props) {
 
     const [users, setUsers] = useState([]);
-    const [matchDeveloper, setMatchDevelopers] = useState(null);
+    const [matchDeveloper, setMatchDeveloper] = useState(null);
 
     useEffect(() => {
         async function loadUsers() {
@@ -36,8 +36,23 @@ function Main(props) {
         });
 
         socket.on('match', developer => {
-            setMatchDevelopers(developer);
-        })
+            setMatchDeveloper(developer);
+        });
+
+        socket.on('app_restart', () => {
+            console.log("Server issued a restart. Getting new list of developers.")
+            async function loadUsers() {
+                const response = await api.get('/developers', {
+                    headers: {
+                        user: props.match.params.id,
+                    }
+                });
+                setMatchDeveloper(null);
+                setUsers(response.data.docs);
+            }
+    
+            loadUsers();
+        });
     }, [props.match.params.id]);
 
     async function handleLike(id) {
@@ -93,7 +108,7 @@ function Main(props) {
                     <strong>{matchDeveloper.name}</strong>
                     <p>{matchDeveloper.bio}</p>
 
-                    <button type="button" onClick={() => setMatchDevelopers(null)}>FECHAR</button>
+                    <button type="button" onClick={() => setMatchDeveloper(null)}>FECHAR</button>
                 </div>
              ) } 
         </div>
