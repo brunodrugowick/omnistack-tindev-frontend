@@ -101,6 +101,20 @@ function Main(props) {
                 <div className="empty">No more devs to match =P</div>
             )}
 
+            <ul>    
+                <li>
+                    <footer>
+                        <strong><a 
+                            href={process.env.REACT_APP_API + "/controlPanel"}
+                            target="_blank" rel='noreferrer noopener'
+                        >Control Panel</a></strong>
+                        <p>This is taking you to an endpoint served by the backend, 
+                            in a server-side rendered page with some VueJS-implemented 
+                            functions. <br/> Why? Just for fun...</p>
+                    </footer>
+                </li>
+            </ul>
+
             { matchDeveloper && (
                 <div className="match-container">
                     <img src={itsamatch} alt="It's a match"/>
